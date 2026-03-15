@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration status="WARN" monitorInterval="60">
+    <properties>
+        <property name="LOG_PATTERN">%highlight{[%-5level] %-d{yyyy-MM-dd HH:mm:ss} --> %l%n[message] %m%n}{FATAL=red, ERROR=red, WARN=yellow, INFO=cyan, DEBUG=cyan,TRACE=blue}</property>
+        <property name="LOG_CHARSET">GBK</property>
+        <property name="LOG_LEVEL">INFO</property>
+        <property name="LOG_BASE_PATH">logs</property>
+        <property name="LOG_AMBULANCE_FILE_PATH">${LOG_BASE_PATH}/ambulance.log</property>
+        <property name="LOG_FIRE_FILE_PATH">${LOG_BASE_PATH}/fire.log</property>
+        <property name="LOG_POLICE_FILE_PATH">${LOG_BASE_PATH}/police.log</property>
+    </properties>
+    <appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout charset="${LOG_CHARSET}" pattern="${LOG_PATTERN}"/>
+        </Console>
+        <File name="AmbulanceFile" fileName="${LOG_AMBULANCE_FILE_PATH}">
+            <ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout charset="${LOG_CHARSET}" pattern="${LOG_PATTERN}"/>
+        </File>
+        <File name="FireFile" fileName="${LOG_FIRE_FILE_PATH}">
+            <ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout charset="${LOG_CHARSET}" pattern="${LOG_PATTERN}"/>
+        </File>
+        <File name="PoliceFile" fileName="${LOG_POLICE_FILE_PATH}">
+            <ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout charset="${LOG_CHARSET}" pattern="${LOG_PATTERN}"/>
+        </File>
+    </appenders>
+    <loggers>
+        <!--也不知道为啥这个官方给的类会有WARN,影响观感,所以屏蔽了-->
+        <logger name="com.infomatiq.jsi.rtree.RTree" level="ERROR"/>
+        <logger name="rangel.extaction.ambulance.RangelExtActionTransport" level="${LOG_LEVEL}">
+            <appender-ref ref="Console"/>
+            <appender-ref ref="AmbulanceFile"/>
+        </logger>
+        <logger name="rangel.extaction.fire.RangelExtActionRescue" level="${LOG_LEVEL}">
+            <appender-ref ref="Console"/>
+            <appender-ref ref="FireFile"/>
+        </logger>
+        <logger name="rangel.extaction.police.RangelExtActionClear" level="${LOG_LEVEL}">
+            <appender-ref ref="Console"/>
+            <appender-ref ref="PoliceFile"/>
+        </logger>
+        <logger name="rangel.module.complex.police.RangelRoadDetector" level="${LOG_LEVEL}">
+            <appender-ref ref="Console"/>
+            <appender-ref ref="PoliceFile"/>
+        </logger>
+        <root level="ALL">
+            <appender-ref ref="Console"/>
+        </root>
+    </loggers>
+</configuration>

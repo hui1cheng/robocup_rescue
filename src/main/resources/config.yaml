@@ -1,0 +1,46 @@
+# agent的体型半径
+humanRadius: 500.0
+
+# agent的休息阈值
+thresholdRest:
+  transport: 100
+  rescue: 100
+  clear: 100
+  move: 100
+
+clustering:
+  # 计算聚类中心时的随机种子
+  seed: 114514
+  # 聚类在预计算时的重复计算次数
+  repeatPrecompute: 20
+  # 聚类在无预计算时的重复计算次数
+  repeatPreparate: 30
+
+pathPlanning:
+  # 不可通过时的乘数
+  unpassableMultiplier: 15.0
+
+dataModule:
+  # 主干道的数量
+  clusterSize: 10
+
+misc:
+  injury:
+    collapse:
+      k: 0.00025
+      l: 0.01
+      noise:
+        mean: 0.1
+        sd: 0.01
+    bury:
+      k: 0.00035
+      l: 0.01
+      noise:
+        mean: 0.1
+        sd: 0.01
+    fire:
+      k: 0.00025
+      l: 0.03
+      noise:
+        mean: 0.1
+        sd: 0.01

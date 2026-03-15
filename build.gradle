@@ -1,0 +1,107 @@
+plugins {
+    id 'java'
+}
+
+defaultTasks 'build'
+
+group = 'org.roborescue-aust'
+version = '2023'
+
+// --- JDK 21 配置 ---
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+}
+
+repositories {
+    mavenCentral()
+    maven { url = 'https://sourceforge.net/projects/jsi/files/m2_repo' }
+    maven { url = 'https://repo.enonic.com/public/' }
+    maven { url = 'https://jitpack.io' }
+    maven { url = 'https://repo.fusesource.com/nexus/content/repositories/releases-3rd-party/' }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    
+    // RCRS 核心依赖
+    implementation 'com.github.roborescue:rcrs-server:master-SNAPSHOT'
+    implementation 'com.github.roborescue:adf-core-java:master-SNAPSHOT'
+
+    // --- 日志系统修复 (解决 NoClassDefFoundError) ---
+    implementation 'org.apache.logging.log4j:log4j-api:2.22.0'
+    implementation 'org.apache.logging.log4j:log4j-core:2.22.0'
+    // 这个库是关键：它让旧的 log4j 1.x 调用指向新的 log4j 2.x
+    implementation 'org.apache.logging.log4j:log4j-1.2-api:2.22.0'
+    implementation 'org.apache.logging.log4j:log4j-slf4j2-impl:2.22.0'
+
+    // 常用工具库
+    implementation 'org.locationtech.jts:jts-core:1.19.0'
+    implementation 'com.google.guava:guava:33.0.0-jre' 
+    implementation 'org.jetbrains:annotations:24.1.0'
+    implementation 'org.yaml:snakeyaml:2.2'
+    implementation 'io.github.yufeixuan:hungarian-algorithms:1.1'
+    
+    // 官方提及的部分依赖补全
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.0'
+    implementation 'org.msgpack:jackson-dataformat-msgpack:0.9.0'
+
+    // Lombok
+    compileOnly 'org.projectlombok:lombok:1.18.30'
+    annotationProcessor 'org.projectlombok:lombok:1.18.30'
+
+    // 测试
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.0'
+}
+
+configurations.all {
+    // 仅排除与 slf4j 冲突的旧版绑定，不要排除 log4j 整体，否则会因找不到类崩溃
+    exclude group: "org.slf4j", module: "slf4j-log4j12"
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.compilerArgs += ['-Xlint:unchecked', '-Xlint:deprecation']
+}
+
+test {
+    useJUnitPlatform()
+}
+
+javadoc {
+    options {
+        encoding = 'UTF-8'
+        addStringOption('Xdoclint:none', '-quiet')
+    }
+}
+
+clean {
+    delete 'bin', 'build', 'precomp_data', 'test-results'
+}
+
+// 对应官方 start/launch 任务
+task launch(type: JavaExec) {
+    // 包含当前目录和 lib 目录以防万一
+    classpath = sourceSets.main.runtimeClasspath + files('lib', '.')
+    mainClass = 'adf.core.Main'
+
+    // 内存设置（参考官方建议 8g，你可以根据需要调整为 4000m）
+    maxHeapSize = '8g' 
+    
+    jvmArgs = [
+            '-XX:+UseG1GC',
+            '-XX:MaxGCPauseMillis=100',
+            '-XX:+ParallelRefProcEnabled',
+            '-XX:+UseStringDeduplication',
+            '-Dlog4j.skipJansi=false'
+    ]
+    
+    // 允许通过命令行传递参数，例如 ./gradlew launch -Pargs="参数"
+    if (project.hasProperty('args')) {
+        args project.args.split('\\s+')
+    }
+}
