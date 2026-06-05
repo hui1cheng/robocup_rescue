@@ -11,7 +11,11 @@
 ## 2. 下载
 
 ```bash
-[$ git clone git@github.com:roborescue-aust/aust.git](https://github.com/hui1cheng/robocup_rescue.git)
+# HTTPS 方式
+git clone https://github.com/hui1cheng/robocup_rescue.git
+
+# 或 SSH 方式
+git clone git@github.com:hui1cheng/robocup_rescue.git
 ```
 
 ## 3. 编译
