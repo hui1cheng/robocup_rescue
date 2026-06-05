@@ -5,13 +5,13 @@
 ## 1. 环境要求
 
 * Git
-* OpenJDK Java 17
+* OpenJDK Java 21
 * Gradle
 
 ## 2. 下载
 
 ```bash
-$ git clone git@github.com:roborescue-aust/Rangel.git
+$ git clone git@github.com:roborescue-aust/aust.git
 ```
 
 ## 3. 编译
